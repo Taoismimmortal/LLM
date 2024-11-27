@@ -5,7 +5,7 @@ import sys
 from langchain.embeddings.openai import OpenAIEmbeddings    # 调用 OpenAI 的 Embeddings 模型
 import os
 from embedding.zhipuai_embedding import ZhipuAIEmbeddings
-from LLM.create_db import create_db,load_knowledge_db
+from create_db import create_db,load_knowledge_db
 from embedding.call_embedding import get_embedding
 
 def get_vectordb(file_path:str=None, persist_path:str=None, embedding = "openai",embedding_key:str=None):

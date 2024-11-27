@@ -27,7 +27,7 @@ sys.path.append("/vector_db")
 # print("存不存在", os.path.exists(DEFAULT_DB_PATH))
 # print("当前工作目录:",os.getcwd())
 from qa_chain.model_to_llm import model_to_llm
-
+ 
 
 def main():
     st.set_page_config(page_title="ChatGPT Assistant", layout="wide")
@@ -36,11 +36,12 @@ def main():
     st.session_state.persist_path = DEFAULT_PERSIST_PATH
     st.session_state.file_path = DEFAULT_DB_PATH
     # 定义聊天模式选项
-    modes = [ "qa_chain", "chat_qa_chain"]
+    modes = [ "qa_chain", "chat_qa_chain","common"]
     mode_captions = [
 
         "不带历史记录的检索问答模式",
-        "带历史记录的检索问答模式"
+        "带历史记录的检索问答模式",
+        "普通模式"
     ]
 
     # 创建标签页
@@ -48,7 +49,7 @@ def main():
     from qa_chain.Chat_QA_chain_self import Chat_QA_chain_self
 
     # 聊天标签页内容
-    with tabs[0]:  # 使用索引0来引用第一个标签页，即"💬 聊天"
+    with tabs[0]:  
         st.header("聊天界面")
 
         # 检查会话状态中是否已经有消息列表，如果没有则初始化
@@ -73,11 +74,14 @@ def main():
 
             if selected_method == "qa_chain":  # 不带历史记录的检索问答模式
                 if 'qa_chain' not in st.session_state:
-                    # 初始化 QA_chain_self 实例
+                    
                     answer = get_qa_chain(prompt)
 
             elif selected_method == "chat_qa_chain":  # 带历史记录的检索问答模式
                 if 'chat_qa_chain' not in st.session_state:
+                    answer = get_chat_qa_chain(prompt)
+            elif selected_method =="common":
+                if 'common' not in st.session_state:
                     answer = get_chat_qa_chain(prompt)
         if answer is not None:
             # 将LLM的回答添加到对话历史中
@@ -246,6 +250,11 @@ def get_qa_chain(question:str):
                                        chain_type_kwargs={"prompt":QA_CHAIN_PROMPT})
     result = qa_chain({"query": question})
     return result["result"]
+#####################
+def get_response(input):
+    llm=model_to_llm(model=st.session_state.selected_model, temperature=st.session_state.temperature,
+                                   api_key=st.session_state.llm_api_key)
+    return llm(input)
 
 if __name__ == "__main__":
     main()
